@@ -1,4 +1,3 @@
-const assert = require('assert');
 const utils = require('../utils');
 
 const randomIndex = arr => Math.floor(Math.random() * arr.length);
@@ -11,9 +10,7 @@ module.exports = {
 			const arr = utils.randomArray();
 			const index = randomIndex(arr);
 
-			const result = arr.indexOf(arr[index]);
-
-			assert.strictEqual(index, result);
+			return arr.indexOf(arr[index]);
 		},
 	}, {
 		title: '[faster.js] while loop',
@@ -32,7 +29,7 @@ module.exports = {
 				i++;
 			}
 
-			assert.strictEqual(index, result);
+			return result;
 		},
 	}],
 };

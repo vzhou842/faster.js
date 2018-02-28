@@ -18,7 +18,8 @@ function runBenchmark(b) {
 		const slowest = this.filter('slowest')[0];
 		const fastest = this.filter('fastest')[0];
 		const microsecDelta = ((1000000 / slowest.hz) - (1000000 / fastest.hz)).toFixed(3);
-		console.log(fastest.name + ' is ' + microsecDelta + 'μs faster than ' + slowest.name + '\n');
+		const percentFaster = (100 * (fastest.hz - slowest.hz) / slowest.hz).toFixed(1);
+		console.log(fastest.name + ' is ' + percentFaster + '% faster (' + microsecDelta + 'μs) than ' + slowest.name + '\n');
 	});
 
 	suite.run();
