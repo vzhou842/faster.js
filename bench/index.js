@@ -1,8 +1,22 @@
 const benchmark = require('benchmark');
 const path = require('path');
 const fs = require('fs');
+const commandLineArgs = require('command-line-args');
 
-benchmark.options.maxTime = 3;
+const options = commandLineArgs([{
+	name: 'benchmarks',
+	alias: 'b',
+	type: String,
+	multiple: true,
+	description: 'The benchmarks to run. If not supplied, all benchmarks will be run.',
+}, {
+	name: 'timeout',
+	alias: 't',
+	type: Number,
+	description: 'The max time allowed per test.',
+}]);
+
+benchmark.options.maxTime = options.timeout || 3;
 benchmark.options.onAbort = event => console.error(event.currentTarget.error);
 
 function runBenchmark(b) {
@@ -28,5 +42,7 @@ function runBenchmark(b) {
 const benchmarksDir = path.join(__dirname, 'benchmarks')
 
 fs.readdirSync(benchmarksDir)
+	.map(file => file.replace('.js', ''))
+	.filter(file => !options.benchmarks || options.benchmarks.includes(file))
 	.map(file => require(path.join(benchmarksDir, file)))
 	.forEach(runBenchmark);
