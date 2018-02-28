@@ -13,20 +13,18 @@ module.exports = {
 			return arr.indexOf(arr[index]);
 		},
 	}, {
-		title: '[faster.js] while loop',
+		title: '[faster.js] for loop',
 		run: () => {
 			const arr = utils.randomArray();
 			const index = randomIndex(arr);
 			const target = arr[index];
 
-			let i = 0;
 			let result = -1;
-			while (i < arr.length) {
+			for (let i = 0; i < arr.length; i++) {
 				if (arr[i] === target) {
 					result = i;
 					break;
 				}
-				i++;
 			}
 
 			return result;
