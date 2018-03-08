@@ -39,7 +39,7 @@ function runBenchmark(b) {
 	suite.run();
 }
 
-const benchmarksDir = path.join(__dirname, 'benchmarks')
+const benchmarksDir = path.join(__dirname, 'benchmarks');
 
 fs.readdirSync(benchmarksDir)
 	.map(file => file.replace('.js', ''))

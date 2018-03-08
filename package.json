@@ -3,13 +3,20 @@
 	"version": "0.1.0",
 	"description": "",
 	"main": "index.js",
-	"dependencies": {},
+	"scripts": {
+		"bench": "node ./bench/index.js",
+		"build": "npx babel src -d lib",
+		"test": "mocha --compilers js:babel-core/register"
+	},
+	"dependencies": {
+		"require-all": "^2.2.0"
+	},
 	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-core": "^6.26.0",
+		"babel-preset-env": "^1.6.1",
 		"benchmark": "^2.1.4",
 		"command-line-args": "^5.0.2"
-	},
-	"scripts": {
-		"bench": "node ./bench/index.js"
 	},
 	"author": "Victor Zhou",
 	"license": "MIT"
