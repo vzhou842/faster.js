@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"bench": "node ./bench/index.js",
+		"bench": "npm run build && node ./bench/index.js",
 		"build": "npx babel src -d lib",
 		"test": "mocha --compilers js:babel-core/register"
 	},

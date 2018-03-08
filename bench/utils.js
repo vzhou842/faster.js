@@ -1,6 +1,6 @@
 const arrayCache = [];
 for (let i = 0; i < 100; i++) {
-	const l = 1 + Math.random() * 10;
+	const l = 10 + Math.random() * 10;
 	arrayCache.push(Array.from({ length: l }, () => Math.random()));
 }
 

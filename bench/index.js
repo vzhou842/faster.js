@@ -2,6 +2,10 @@ const benchmark = require('benchmark');
 const path = require('path');
 const fs = require('fs');
 const commandLineArgs = require('command-line-args');
+const transform = require('babel-core').transform;
+
+const fasterjs = require('../lib').default;
+const utils = require('./utils');
 
 const options = commandLineArgs([{
 	name: 'benchmarks',
@@ -19,14 +23,17 @@ const options = commandLineArgs([{
 benchmark.options.maxTime = options.timeout || 3;
 benchmark.options.onAbort = event => console.error(event.currentTarget.error);
 
-function runBenchmark(b) {
+function wrap(source) {
+	return (new Function('utils', source)).bind(null, utils);
+}
+
+function runBenchmark(title, nativeSource, compiledSource) {
 	const suite = new benchmark.Suite();
 
-	b.tests.forEach(test => {
-		suite.add(test.title, test.run);
-	});
+	suite.add('native', wrap(nativeSource));
+	suite.add('faster.js', wrap(compiledSource));
 
-	suite.on('start', () => console.log('  ' + b.title));
+	suite.on('start', () => console.log('  ' + title));
 	suite.on('cycle', event => console.log("    ✓ " + event.target));
 	suite.on('complete', function() {
 		const slowest = this.filter('slowest')[0];
@@ -39,10 +46,16 @@ function runBenchmark(b) {
 	suite.run();
 }
 
-const benchmarksDir = path.join(__dirname, 'benchmarks');
+const nativeDir = path.join(__dirname, 'src');
 
-fs.readdirSync(benchmarksDir)
-	.map(file => file.replace('.js', ''))
-	.filter(file => !options.benchmarks || options.benchmarks.includes(file))
-	.map(file => require(path.join(benchmarksDir, file)))
-	.forEach(runBenchmark);
+const fileNames = fs.readdirSync(nativeDir)
+	.filter(file => file[0] !== '.')
+	.map(f => f.replace('.js', ''))
+	.filter(f => !options.benchmarks || options.benchmarks.includes(f));
+
+const nativeSources = fileNames.map(f => fs.readFileSync(path.join(nativeDir, f + '.js')));
+const compiledSources = nativeSources.map(s => transform(s, { plugins: [fasterjs] }).code);
+
+fileNames.forEach((f, i) => {
+	runBenchmark(fileNames[i], nativeSources[i], compiledSources[i]);
+});

@@ -23,7 +23,6 @@ describe('Execution Tests', () => {
 				const original = wrap(input);
 				const { code } = transform(input, { plugins: [fasterjs] });
 				const transformed = wrap(code);
-
 				assert.deepStrictEqual(original(), transformed());
 			});
 		});
