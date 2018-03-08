@@ -21,7 +21,7 @@ describe('Execution Tests', () => {
 		inputs.forEach((input, i) => {
 			it(inputNames[i].replace('.js', ''), () => {
 				const original = wrap(input);
-				const { code } = transform(input, { plugins: [fasterjs] });
+				const { code } = transform(input, { babelrc: false, plugins: [fasterjs] });
 				const transformed = wrap(code);
 				assert.deepStrictEqual(original(), transformed());
 			});

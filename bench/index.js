@@ -54,7 +54,7 @@ const fileNames = fs.readdirSync(nativeDir)
 	.filter(f => !options.benchmarks || options.benchmarks.includes(f));
 
 const nativeSources = fileNames.map(f => fs.readFileSync(path.join(nativeDir, f + '.js')));
-const compiledSources = nativeSources.map(s => transform(s, { plugins: [fasterjs] }).code);
+const compiledSources = nativeSources.map(s => transform(s, { babelrc: false, plugins: [fasterjs] }).code);
 
 fileNames.forEach((f, i) => {
 	runBenchmark(fileNames[i], nativeSources[i], compiledSources[i]);

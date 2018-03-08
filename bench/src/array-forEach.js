@@ -1,5 +1,3 @@
-'use strict';
-
 const array = utils.randomArray();
 const results = [];
 
