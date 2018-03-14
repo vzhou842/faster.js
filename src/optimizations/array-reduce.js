@@ -34,8 +34,6 @@ export default function(t) {
 				return;
 			}
 
-			const assignee = declaration.id;
-
 			const acc = writeReduceForLoop(t, path, declaration.init);
 			path.get('declarations.0.init').replaceWith(acc);
 		},

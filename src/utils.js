@@ -1,3 +1,7 @@
+/**
+ * Checks whether an AST node is a method call on an identifier, e.g.:
+ *     object.method(params);
+ */
 export function isIdMethodCall(t, node, method) {
 	return t.isCallExpression(node) &&
 		t.isMemberExpression(node.callee) &&
@@ -5,6 +9,10 @@ export function isIdMethodCall(t, node, method) {
 		node.callee.property.name === method;
 }
 
+/**
+ * Checks whether an AST node is an identifier assignment, e.g.:
+ *     let variable = 'value';
+ */
 export function isIdAssignment(t, node) {
 	return t.isAssignmentExpression(node) &&
 		t.isIdentifier(node.left) &&
@@ -13,9 +21,9 @@ export function isIdAssignment(t, node) {
 
 /**
  * Creates an AST for a for loop of the following form:
- * for (let i = init || 0; i < array.length; i++) { body }
+ *     for (let i = init || 0; i < array.length; i++) { body }
  *
- * @param init Optional initial value for i. Defaults to 0.
+ * @param {number} [init=0] - The initial value for i.
  */
 export function basicArrayForLoop(t, i, array, body, init) {
 	const forInit = t.VariableDeclaration("let", [

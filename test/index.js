@@ -20,8 +20,12 @@ describe('Execution Tests', () => {
 
 		inputs.forEach((input, i) => {
 			it(inputNames[i].replace('.js', ''), () => {
-				const original = wrap(input);
+				// Compile the input.
 				const { code } = transform(input, { babelrc: false, plugins: [fasterjs] });
+
+				// Compare the execution results of the original code to
+				// that of the compiled code.
+				const original = wrap(input);
 				const transformed = wrap(code);
 				assert.deepStrictEqual(original(), transformed());
 			});

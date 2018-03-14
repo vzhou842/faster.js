@@ -1,3 +1,4 @@
+// Initialize the array cache used to quickly retrieve random arrays.
 const arrayCache = [];
 for (let i = 0; i < 100; i++) {
 	const l = 10 + Math.random() * 10;
