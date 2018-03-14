@@ -1,13 +1,19 @@
-import { isMethodCall, basicArrayForLoop } from '../utils';
+import { isIdMethodCall, basicArrayForLoop } from '../utils';
 
 /**
  * Returns a visitor that rewrites array.map() calls as a for loop.
+ *
+ * Only supports calls on identifiers:
+ *     array.map(f); // called on identifier 'array'
+ *     [1, 2].map(f); // not called on an identifier
+ *
  * Only supports assignments and single declarations:
+ *     results = arr.map(f); // assignment
+ *     const results = arr.map(f); // single declaration
  *
- * results = arr.map(f); // assignment
- *
- * const results = arr.map(f); // single declaration
- *
+ * Only supports 1 argument:
+ *     arr.map(f); // valid call with 1 argument
+ *     arr.map(f, this); // valid call with 2 arguments
  */
 export default function(t) {
 	return {
@@ -16,7 +22,8 @@ export default function(t) {
 			if (!t.isAssignmentExpression(expression) ||
 				!t.isIdentifier(expression.left) ||
 				expression.operator !== '=' ||
-				!isMethodCall(t, expression.right, 'map')) {
+				!isIdMethodCall(t, expression.right, 'map') ||
+				expression.right.arguments.length !== 1) {
 				return;
 			}
 
@@ -32,7 +39,7 @@ export default function(t) {
 			if (path.node.declarations.length !== 1) return;
 
 			const declaration = path.node.declarations[0];
-			if (!isMethodCall(t, declaration.init, 'map')) {
+			if (!isIdMethodCall(t, declaration.init, 'map')) {
 				return;
 			}
 

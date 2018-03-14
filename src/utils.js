@@ -1,6 +1,7 @@
-export function isMethodCall(t, node, method) {
+export function isIdMethodCall(t, node, method) {
 	return t.isCallExpression(node) &&
 		t.isMemberExpression(node.callee) &&
+		t.isIdentifier(node.callee.object) &&
 		node.callee.property.name === method;
 }
 
