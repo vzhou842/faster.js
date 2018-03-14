@@ -15,7 +15,7 @@ describe('Execution Tests', () => {
 
 	function testFolder(folder) {
 		const folderDir = path.join(execDir, folder);
-		const inputNames = fs.readdirSync(folderDir);
+		const inputNames = fs.readdirSync(folderDir).filter(n => n[0] !== '.');
 		const inputs = inputNames.map(n => fs.readFileSync(path.join(folderDir, n)));
 
 		inputs.forEach((input, i) => {

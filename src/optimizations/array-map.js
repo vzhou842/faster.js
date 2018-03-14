@@ -1,4 +1,4 @@
-import { isIdMethodCall, basicArrayForLoop } from '../utils';
+import { isIdAssignment, isIdMethodCall, basicArrayForLoop } from '../utils';
 
 /**
  * Returns a visitor that rewrites array.map() calls as a for loop.
@@ -19,9 +19,7 @@ export default function(t) {
 	return {
 		ExpressionStatement(path, state) {
 			const expression = path.node.expression;
-			if (!t.isAssignmentExpression(expression) ||
-				!t.isIdentifier(expression.left) ||
-				expression.operator !== '=' ||
+			if (!isIdAssignment(t, expression) ||
 				!isIdMethodCall(t, expression.right, 'map') ||
 				expression.right.arguments.length !== 1) {
 				return;
