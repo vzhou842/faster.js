@@ -1,3 +1,5 @@
+import { isMethodCall, basicArrayForLoop } from '../utils';
+
 /**
  * Returns a visitor that rewrites array.forEach() calls as a for loop.
  */
@@ -6,9 +8,7 @@ export default function(t) {
 		ExpressionStatement(path, state) {
 			const expression = path.node.expression;
 
-			if (!t.isCallExpression(expression) ||
-				!t.isMemberExpression(expression.callee) ||
-				expression.callee.property.name !== 'forEach' ||
+			if (!isMethodCall(t, expression, 'forEach') ||
 				expression.arguments.length > 1) {
 				return;
 			}
@@ -17,18 +17,13 @@ export default function(t) {
 			const func = expression.arguments[0];
 			const i = path.scope.generateUidIdentifier('i');
 
-			const forInit = t.VariableDeclaration("let", [
-				t.VariableDeclarator(i, t.numericLiteral(0)),
-			]);
-			const forTest = t.binaryExpression('<', i, t.memberExpression(array, t.identifier('length')));
-			const forUpdate = t.unaryExpression('++', i, false);
 			const forBody = t.blockStatement([
 				t.expressionStatement(
 					t.callExpression(func, [t.memberExpression(array, i, true), i, array])
 				),
 			]);
 
-			path.replaceWith(t.forStatement(forInit, forTest, forUpdate, forBody));
+			path.replaceWith(basicArrayForLoop(t, i, array, forBody));
 		}
 	};
 }
