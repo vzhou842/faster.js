@@ -1,4 +1,8 @@
-import { isIdMethodCall, basicArrayForLoop } from '../utils';
+import {
+	isIdMethodCall,
+	basicArrayForLoop,
+	extractDynamicFuncIfNeeded,
+} from '../utils';
 
 /**
  * Returns a visitor that rewrites array.forEach() calls as a for loop.
@@ -9,7 +13,7 @@ import { isIdMethodCall, basicArrayForLoop } from '../utils';
  *
  * Only supports 1 argument:
  *     arr.forEach(f); // valid call with 1 argument
- *     arr.forEach(f, this); // valid call with 2 arguments
+ *     arr.forEach(f, this); // unsupported call with 2 arguments
  */
 export default function(t) {
 	return {
@@ -21,8 +25,9 @@ export default function(t) {
 				return;
 			}
 
+			const func = extractDynamicFuncIfNeeded(t, path.get('expression'));
+
 			const array = expression.callee.object;
-			const func = expression.arguments[0];
 			const i = path.scope.generateUidIdentifier('i');
 
 			const forBody = t.blockStatement([

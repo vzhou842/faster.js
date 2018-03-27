@@ -1,11 +1,16 @@
-import { isIdAssignment, isIdMethodCall, basicArrayForLoop } from '../utils';
+import {
+	isIdAssignment,
+	isIdMethodCall,
+	basicArrayForLoop,
+	extractDynamicFuncIfNeeded,
+} from '../utils';
 
 /**
  * Returns a visitor that rewrites array.map() calls as a for loop.
  *
  * Only supports calls on identifiers:
  *     array.map(f); // called on identifier 'array'
- *     [1, 2].map(f); // not called on an identifier
+ *     [1, 2].map(f); // literal [1, 2] is not an identifier
  *
  * Only supports assignments and single declarations:
  *     results = arr.map(f); // assignment
@@ -30,7 +35,7 @@ export default function(t) {
 			const initAssignment = t.assignmentExpression('=', assignee, t.arrayExpression());
 			path.insertBefore(t.expressionStatement(initAssignment));
 
-			path.replaceWith(forLoop(t, path, assignee, expression.right));
+			path.replaceWith(forLoop(t, path, assignee, path.get('expression.right')));
 		},
 
 		VariableDeclaration(path, state) {
@@ -43,15 +48,17 @@ export default function(t) {
 
 			const assignee = declaration.id;
 
-			path.insertAfter(forLoop(t, path, assignee, declaration.init));
-			path.get('declarations.0.init').replaceWith(t.arrayExpression());
+			const mapPath = path.get('declarations.0.init');
+			path.insertAfter(forLoop(t, path, assignee, mapPath));
+			mapPath.replaceWith(t.arrayExpression());
 		},
 	};
 }
 
-function forLoop(t, path, assignee, mapCall) {
+function forLoop(t, path, assignee, mapPath) {
+	const mapCall = mapPath.node;
 	const array = mapCall.callee.object;
-	const func = mapCall.arguments[0];
+	const func = extractDynamicFuncIfNeeded(t, mapPath, path);
 	const i = path.scope.generateUidIdentifier('i');
 
 	const newMapCall = t.callExpression(func, [t.memberExpression(array, i, true), i, array]);

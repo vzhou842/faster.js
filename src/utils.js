@@ -34,3 +34,33 @@ export function basicArrayForLoop(t, i, array, body, init) {
 
 	return t.forStatement(forInit, forTest, forUpdate, body);
 }
+
+/**
+ * Rewrites a method call using an arrow function or anonymous function
+ * so that the function is defined first, if necessary.
+ *
+ * Before:
+ *     let x = object.map(e => 2 * e);
+ *
+ * After:
+ *     const func = e => 2 * e;
+ *     let x = object.map(func);
+ *
+ * @param path - The path to the method call whose first argument is a function.
+ * @param [insertPath=path] - The path at which to insert the extracted function declaration.
+ * @returns The function identifier, regardless of whether a rewrite occurred.
+ */
+export function extractDynamicFuncIfNeeded(t, path, insertPath) {
+	const f = path.node.arguments[0];
+	let ret = f;
+
+	if (t.isArrowFunctionExpression(f) || t.isFunctionExpression(f)) {
+		ret = path.scope.generateUidIdentifier('f');
+		(insertPath || path).insertBefore(t.VariableDeclaration('const', [
+			t.VariableDeclarator(ret, f),
+		]));
+		path.get('arguments.0').replaceWith(ret);
+	}
+
+	return ret;
+}

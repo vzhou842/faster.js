@@ -1,7 +1,3 @@
 const array = utils.randomArray();
 
-function f(acc, e, i) {
-	return e + i;
-}
-
-const results = array.reduce(f, 0);
+const results = array.reduce((acc, e, i) => acc + e + i, 0);
