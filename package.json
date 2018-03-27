@@ -2,11 +2,12 @@
 	"name": "faster.js",
 	"version": "1.0.0-alpha.0",
 	"description": "",
-	"main": "index.js",
+	"main": "lib/index.js",
 	"scripts": {
 		"bench": "npm run build && node ./bench/index.js",
 		"build": "npx babel src -d lib",
-		"test": "mocha --compilers js:babel-core/register"
+		"test": "mocha --compilers js:babel-core/register",
+		"prepare": "npm run build"
 	},
 	"dependencies": {},
 	"devDependencies": {
