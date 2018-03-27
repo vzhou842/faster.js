@@ -8,9 +8,7 @@
 		"build": "npx babel src -d lib",
 		"test": "mocha --compilers js:babel-core/register"
 	},
-	"dependencies": {
-		"require-all": "^2.2.0"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",
 		"babel-core": "^6.26.0",
