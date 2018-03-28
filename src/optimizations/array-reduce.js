@@ -1,16 +1,13 @@
 import {
 	isIdAssignment,
-	isIdMethodCall,
+	isMethodCall,
 	basicArrayForLoop,
+	defineIdIfNeeded,
 	extractDynamicFuncIfNeeded,
 } from '../utils';
 
 /**
  * Returns a visitor that rewrites array.reduce() calls as a for loop.
- *
- * Only supports calls on identifiers:
- *     array.reduce(f); // called on identifier 'array'
- *     [1, 2].reduce(f); // not called on an identifier
  *
  * Only supports assignments and single declarations:
  *     results = arr.reduce(f); // assignment
@@ -21,7 +18,7 @@ export default function(t) {
 		ExpressionStatement(path, state) {
 			const expression = path.node.expression;
 			if (!isIdAssignment(t, expression) ||
-				!isIdMethodCall(t, expression.right, 'reduce')) {
+				!isMethodCall(t, expression.right, 'reduce')) {
 				return;
 			}
 
@@ -34,7 +31,7 @@ export default function(t) {
 		VariableDeclaration(path, state) {
 			if (path.node.declarations.length !== 1) return;
 
-			if (!isIdMethodCall(t, path.node.declarations[0].init, 'reduce')) {
+			if (!isMethodCall(t, path.node.declarations[0].init, 'reduce')) {
 				return;
 			}
 
@@ -48,7 +45,7 @@ export default function(t) {
 // Returns the identifier the result is stored in.
 function writeReduceForLoop(t, path, reducePath) {
 	const reduceCall = reducePath.node;
-	const array = reduceCall.callee.object;
+	const array = defineIdIfNeeded(t, reducePath.get('callee.object'), path);
 	const func = extractDynamicFuncIfNeeded(t, reducePath, path);
 	const acc = path.scope.generateUidIdentifier('acc');
 	const i = path.scope.generateUidIdentifier('i');

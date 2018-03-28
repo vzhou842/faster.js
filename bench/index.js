@@ -64,6 +64,7 @@ fileNames.forEach((f, i) => {
 	].forEach(options => {
 		let nativeSource = nativeSources[i];
 		let compiledSource = compiledSources[i];
+
 		for (const key in options) {
 			if (key !== 'name') {
 				nativeSource = nativeSource.replace(key, options[key]);

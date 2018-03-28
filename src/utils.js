@@ -2,10 +2,10 @@
  * Checks whether an AST node is a method call on an identifier, e.g.:
  *     object.method(params);
  */
-export function isIdMethodCall(t, node, method) {
+export function isMethodCall(t, node, method) {
 	return t.isCallExpression(node) &&
 		t.isMemberExpression(node.callee) &&
-		t.isIdentifier(node.callee.object) &&
+		// t.isIdentifier(node.callee.object) &&
 		node.callee.property.name === method;
 }
 
@@ -36,6 +36,24 @@ export function basicArrayForLoop(t, i, array, body, init) {
 }
 
 /**
+ * Defines an AST node as an identifier if it isn't already one.
+ *
+ * @param path - The path to the AST node in question.
+ * @param [insertPath=path] - The path at which to insert the new definition.
+ * @returns The identifier.
+ */
+export function defineIdIfNeeded(t, path, insertPath) {
+	let ret = path.node;
+	if (!t.isIdentifier(path.node)) {
+		ret = path.scope.generateUidIdentifier('defined');
+		(insertPath || path).insertBefore(t.VariableDeclaration('const', [
+			t.VariableDeclarator(ret, path.node),
+		]));
+	}
+	return ret;
+}
+
+/**
  * Rewrites a method call using an arrow function or anonymous function
  * so that the function is defined first, if necessary.
  *
@@ -55,11 +73,9 @@ export function extractDynamicFuncIfNeeded(t, path, insertPath) {
 	let ret = f;
 
 	if (t.isArrowFunctionExpression(f) || t.isFunctionExpression(f)) {
-		ret = path.scope.generateUidIdentifier('f');
-		(insertPath || path).insertBefore(t.VariableDeclaration('const', [
-			t.VariableDeclarator(ret, f),
-		]));
-		path.get('arguments.0').replaceWith(ret);
+		const fPath = path.get('arguments.0');
+		ret = defineIdIfNeeded(t, fPath, insertPath || path);
+		fPath.replaceWith(ret);
 	}
 
 	return ret;

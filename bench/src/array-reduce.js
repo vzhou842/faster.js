@@ -1,3 +1,2 @@
-const array = utils.randomArray(ARRAY_SIZE);
-
-const results = array.reduce((acc, e, i) => acc + e + i, 0);
+const results = utils.randomArray(ARRAY_SIZE)
+	.reduce((acc, e, i) => acc + e + i, 0);
