@@ -27,7 +27,7 @@ function wrap(source) {
 	return (new Function('utils', source)).bind(null, utils);
 }
 
-function runBenchmark(title, nativeSource, compiledSource) {
+function runBenchmarks(title, nativeSource, compiledSource) {
 	const suite = new benchmark.Suite();
 
 	suite.add('native', wrap(nativeSource));
@@ -53,9 +53,23 @@ const fileNames = fs.readdirSync(nativeDir)
 	.map(f => f.replace('.js', ''))
 	.filter(f => !options.benchmarks || options.benchmarks.includes(f));
 
-const nativeSources = fileNames.map(f => fs.readFileSync(path.join(nativeDir, f + '.js')));
+const nativeSources = fileNames.map(f => fs.readFileSync(path.join(nativeDir, f + '.js'), 'utf8'));
 const compiledSources = nativeSources.map(s => transform(s, { babelrc: false, plugins: [fasterjs] }).code);
 
 fileNames.forEach((f, i) => {
-	runBenchmark(fileNames[i], nativeSources[i], compiledSources[i]);
+	[
+		{ name: 'small', ARRAY_SIZE: "'small'" },
+		{ name: 'medium', ARRAY_SIZE: "'medium'" },
+		{ name: 'large', ARRAY_SIZE: "'large'" },
+	].forEach(options => {
+		let nativeSource = nativeSources[i];
+		let compiledSource = compiledSources[i];
+		for (const key in options) {
+			if (key !== 'name') {
+				nativeSource = nativeSource.replace(key, options[key]);
+				compiledSource = compiledSource.replace(key, options[key]);
+			}
+		}
+		runBenchmarks(fileNames[i] + ' ' + options.name, nativeSource, compiledSource);
+	});
 });
