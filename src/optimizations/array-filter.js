@@ -39,7 +39,8 @@ export default function(t) {
 			if (path.node.declarations.length !== 1) return;
 
 			const declaration = path.node.declarations[0];
-			if (!isMethodCall(t, declaration.init, 'filter')) {
+			if (!isMethodCall(t, declaration.init, 'filter') ||
+				declaration.init.arguments.length !== 1) {
 				return;
 			}
 
