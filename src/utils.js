@@ -30,7 +30,7 @@ export function basicArrayForLoop(t, i, array, body, init) {
 		t.VariableDeclarator(i, init || t.numericLiteral(0)),
 	]);
 	const forTest = t.binaryExpression('<', i, t.memberExpression(array, t.identifier('length')));
-	const forUpdate = t.unaryExpression('++', i, false);
+	const forUpdate = t.updateExpression('++', i);
 
 	return t.forStatement(forInit, forTest, forUpdate, body);
 }
