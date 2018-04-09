@@ -4,7 +4,9 @@ faster.js is a [Babel](https://babeljs.io/) plugin that compiles idiomatic Javas
 
 ## Installation
 
-Coming Soon!
+```bash
+npm install --save-dev faster.js
+```
 
 ## Usage
 
