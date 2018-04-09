@@ -7,22 +7,22 @@ import {
 } from '../utils';
 
 /**
- * Returns a visitor that rewrites array.map() calls as a for loop.
+ * Returns a visitor that rewrites array.filter() calls as a for loop.
  *
  * Only supports assignments and single declarations:
- *     results = arr.map(f); // assignment
- *     const results = arr.map(f); // single declaration
+ *     results = arr.filter(f); // assignment
+ *     const results = arr.filter(f); // single declaration
  *
  * Only supports 1 argument:
- *     arr.map(f); // call with 1 argument will get compiled
- *     arr.map(f, this); // call with 2 arguments won't get compiled
+ *     arr.filter(f); // call with 1 argument will get compiled
+ *     arr.filter(f, this); // call with 2 arguments won't get compiled
  */
 export default function(t) {
 	return {
 		ExpressionStatement(path, state) {
 			const expression = path.node.expression;
 			if (!isIdAssignment(t, expression) ||
-				!isMethodCall(t, expression.right, 'map') ||
+				!isMethodCall(t, expression.right, 'filter') ||
 				expression.right.arguments.length !== 1) {
 				return;
 			}
@@ -39,31 +39,33 @@ export default function(t) {
 			if (path.node.declarations.length !== 1) return;
 
 			const declaration = path.node.declarations[0];
-			if (!isMethodCall(t, declaration.init, 'map')) {
+			if (!isMethodCall(t, declaration.init, 'filter')) {
 				return;
 			}
 
 			const assignee = declaration.id;
 
-			const mapPath = path.get('declarations.0.init');
-			path.insertAfter(forLoop(t, path, assignee, mapPath));
-			mapPath.replaceWith(t.arrayExpression());
+			const filterPath = path.get('declarations.0.init');
+			path.insertAfter(forLoop(t, path, assignee, filterPath));
+			filterPath.replaceWith(t.arrayExpression());
 		},
 	};
 }
 
-function forLoop(t, path, assignee, mapPath) {
-	const array = defineIdIfNeeded(t, mapPath.get('callee.object'), path);
-	const func = extractDynamicFuncIfNeeded(t, mapPath, path);
+function forLoop(t, path, assignee, filterPath) {
+	const array = defineIdIfNeeded(t, filterPath.get('callee.object'), path);
+	const func = extractDynamicFuncIfNeeded(t, filterPath, path);
 	const i = path.scope.generateUidIdentifier('i');
+	const element = t.memberExpression(array, i, true);
 
-	const newMapCall = t.callExpression(func, [t.memberExpression(array, i, true), i, array]);
+	const newFilterCall = t.callExpression(func, [element, i, array]);
 	const forBody = t.blockStatement([
-		t.expressionStatement(
-			t.callExpression(
+		t.ifStatement(
+			newFilterCall,
+			t.expressionStatement(t.callExpression(
 				t.memberExpression(assignee, t.identifier('push')),
-				[newMapCall]
-			)
+				[element]
+			))
 		),
 	]);
 
