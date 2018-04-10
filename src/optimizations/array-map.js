@@ -2,6 +2,7 @@ import {
 	isIdAssignment,
 	isMethodCall,
 	basicArrayForLoop,
+	defineId,
 	defineIdIfNeeded,
 	extractDynamicFuncIfNeeded,
 } from '../utils';
@@ -27,12 +28,19 @@ export default function(t) {
 				return;
 			}
 
+			const mapPath = path.get('expression.right');
 			const assignee = expression.left;
+
+			// If the array is the assignee, we need a temp var to hold the array.
+			const array = expression.right.callee.object;
+			if (t.isIdentifier(array) && array.name === assignee.name) {
+				mapPath.get('callee.object').replaceWith(defineId(t, path, array, 'const', 'arr'));
+			}
 
 			const initAssignment = t.assignmentExpression('=', assignee, t.arrayExpression());
 			path.insertBefore(t.expressionStatement(initAssignment));
 
-			path.replaceWith(forLoop(t, path, assignee, path.get('expression.right')));
+			path.replaceWith(forLoop(t, path, assignee, mapPath));
 		},
 
 		VariableDeclaration(path, state) {

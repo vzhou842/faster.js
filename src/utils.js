@@ -36,6 +36,23 @@ export function basicArrayForLoop(t, i, array, body, init) {
 }
 
 /**
+ * Defines an identifier before the supplied path.
+ *
+ * @param path - The path before which to define the identifier.
+ * @param value - The initial value of the identifier.
+ * @param [type=let] - The declaration type (let or const).
+ * @param [name=defined] - The identifier name.
+ * @returns The identifier.
+ */
+export function defineId(t, path, value, type, name) {
+	const id = path.scope.generateUidIdentifier(name || 'defined');
+	path.insertBefore(t.VariableDeclaration(type || 'let', [
+		t.VariableDeclarator(id, value),
+	]));
+	return id;
+}
+
+/**
  * Defines an AST node as an identifier if it isn't already one.
  *
  * @param path - The path to the AST node in question.
@@ -45,10 +62,7 @@ export function basicArrayForLoop(t, i, array, body, init) {
 export function defineIdIfNeeded(t, path, insertPath) {
 	let ret = path.node;
 	if (!t.isIdentifier(path.node)) {
-		ret = path.scope.generateUidIdentifier('defined');
-		(insertPath || path).insertBefore(t.VariableDeclaration('const', [
-			t.VariableDeclarator(ret, path.node),
-		]));
+		ret = defineId(t, insertPath || path, path.node, 'const');
 	}
 	return ret;
 }
