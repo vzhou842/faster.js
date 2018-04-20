@@ -46,12 +46,23 @@ module: {
 
 faster.js rewrites common `Array` method calls to faster code that does the same thing (usually - see [When NOT to use faster.js](#warning-when-not-to-use-fasterjs)). This results in performance boosts (especially on code that relies heavily on `Array` methods) while maintaining code readability, but comes at the cost of a slightly larger bundle size. If having a small Javascript bundle size is much more important for you than performance is, you should not use faster.js.
 
+### Supported `Array` methods
+
+faster.js will rewrite the following `Array` methods when possible:
+- `.every()`
+- `.filter()`
+- `.forEach()`
+- `.map()`
+- `.reduce()`
+- `.reduceRight()`
+- `.some()`
+
 ### Demo
 ![faster.js Demo Screenshot](https://fasterjs-demo.victorzhou.com/img/screenshot.png)
 
 Try it yourself: https://fasterjs-demo.victorzhou.com
 
-Github Repo: https://github.com/vzhou842/faster.js-demo
+Demo Github repo: https://github.com/vzhou842/faster.js-demo
 
 ## :warning: When NOT to use faster.js
 
@@ -63,14 +74,7 @@ Code compiled with faster.js may produce incorrect results when run on sparse ar
 #### 2. Restricted methods are only ever called on native Javascript arrays:
 faster.js assumes any restricted method call is done on a native Javascript array. Any new classes you write should not include methods with restricted names.
 
-Restricted method names:
-- `.filter()`
-- `.forEach()`
-- `.map()`
-- `.reduce()`
-- `.reduceRight()`
-- `.some()`
-- `.every()`
+Restricted method names are the names of methods that faster.js will attempt to rewrite - see [Supported `Array` methods](#supported-array-methods).
 
 ```js
 // OK
