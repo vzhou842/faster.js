@@ -18,49 +18,47 @@ import {
  *     arr.some(f); // valid call with 1 argument
  *     arr.some(f, this); // unsupported call with 2 arguments
  */
-export default function(t) {
-	return {
-		ExpressionStatement(path, state) {
-			const expression = path.node.expression;
-			if (!isIdAssignment(t, expression) ||
-				!isMethodCall(t, expression.right, 'some') ||
-				expression.right.arguments.length !== 1) {
-				return;
-			}
+export default t => ({
+	ExpressionStatement(path, state) {
+		const expression = path.node.expression;
+		if (!isIdAssignment(t, expression) ||
+			!isMethodCall(t, expression.right, 'some') ||
+			expression.right.arguments.length !== 1) {
+			return;
+		}
 
-			const somePath = path.get('expression.right');
-			const assignee = expression.left;
+		const somePath = path.get('expression.right');
+		const assignee = expression.left;
 
-			// If the array is the assignee, we need a temp var to hold the array.
-			const array = expression.right.callee.object;
-			if (t.isIdentifier(array) && array.name === assignee.name) {
-				somePath.get('callee.object').replaceWith(defineId(t, path, array, 'const', 'arr'));
-			}
+		// If the array is the assignee, we need a temp var to hold the array.
+		const array = expression.right.callee.object;
+		if (t.isIdentifier(array) && array.name === assignee.name) {
+			somePath.get('callee.object').replaceWith(defineId(t, path, array, 'const', 'arr'));
+		}
 
-			const initAssignment = t.assignmentExpression('=', assignee, t.booleanLiteral(false));
-			path.insertBefore(t.expressionStatement(initAssignment));
+		const initAssignment = t.assignmentExpression('=', assignee, t.booleanLiteral(false));
+		path.insertBefore(t.expressionStatement(initAssignment));
 
-			path.replaceWith(forLoop(t, path, assignee, somePath));
-		},
+		path.replaceWith(forLoop(t, path, assignee, somePath));
+	},
 
-		VariableDeclaration(path, state) {
-			if (path.node.declarations.length !== 1) return;
+	VariableDeclaration(path, state) {
+		if (path.node.declarations.length !== 1) return;
 
-			const declaration = path.node.declarations[0];
-			if (!isMethodCall(t, declaration.init, 'some') ||
-				declaration.init.arguments.length !== 1) {
-				return;
-			}
+		const declaration = path.node.declarations[0];
+		if (!isMethodCall(t, declaration.init, 'some') ||
+			declaration.init.arguments.length !== 1) {
+			return;
+		}
 
-			const assignee = declaration.id;
-			const tempAssignee = defineId(t, path, t.booleanLiteral(false), 'let', 'temp');
+		const assignee = declaration.id;
+		const tempAssignee = defineId(t, path, t.booleanLiteral(false), 'let', 'temp');
 
-			const somePath = path.get('declarations.0.init');
-			path.insertBefore(forLoop(t, path, tempAssignee, somePath));
-			somePath.replaceWith(tempAssignee);
-		},
-	};
-}
+		const somePath = path.get('declarations.0.init');
+		path.insertBefore(forLoop(t, path, tempAssignee, somePath));
+		somePath.replaceWith(tempAssignee);
+	},
+});
 
 function forLoop(t, path, assignee, somePath) {
 	const array = defineIdIfNeeded(t, somePath.get('callee.object'), path);
