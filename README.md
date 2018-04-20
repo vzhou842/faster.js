@@ -69,6 +69,7 @@ Restricted method names:
 - `.map()`
 - `.reduce()`
 - `.reduceRight()`
+- `.some()`
 
 ```js
 // OK
