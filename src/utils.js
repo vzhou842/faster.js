@@ -1,11 +1,33 @@
 /**
+ * Returns a certain index of an array:
+ *     return fromBack ? array.length - 1 - offset : offset;
+ */
+export function arrayIndex(t, array, offset, fromBack) {
+	if (fromBack) {
+		return t.binaryExpression(
+			'-',
+			t.memberExpression(array, t.identifier('length')),
+			t.numericLiteral(offset + 1)
+		);
+	}
+	return t.numericLiteral(offset);
+}
+
+/**
+ * Returns a certain member of an array:
+ *     return array[arrayIndex(array, offset, fromBack)];
+ */
+export function arrayMember(t, array, offset, fromBack) {
+	return t.memberExpression(array, arrayIndex(t, array, offset, fromBack), true);
+}
+
+/**
  * Checks whether an AST node is a method call on an identifier, e.g.:
  *     object.method(params);
  */
 export function isMethodCall(t, node, method) {
 	return t.isCallExpression(node) &&
 		t.isMemberExpression(node.callee) &&
-		// t.isIdentifier(node.callee.object) &&
 		node.callee.property.name === method;
 }
 
@@ -21,16 +43,20 @@ export function isIdAssignment(t, node) {
 
 /**
  * Creates an AST for a for loop of the following form:
- *     for (let i = init || 0; i < array.length; i++) { body }
+ *     for (let i = init || 0; i <= array.length - 1; i++) { body }
  *
+ * If backwards is specified, the for loop is instead:
+ *     for (let i = init || array.length - 1; i >= 0; i--) { body }
+ *
+ * @param [backwards=false] - Whether or not to loop backwards.
  * @param {number} [init=0] - The initial value for i.
  */
-export function basicArrayForLoop(t, i, array, body, init) {
+export function basicArrayForLoop(t, i, array, body, backwards, init) {
 	const forInit = t.VariableDeclaration("let", [
-		t.VariableDeclarator(i, init || t.numericLiteral(0)),
+		t.VariableDeclarator(i, init || arrayIndex(t, array, 0, backwards)),
 	]);
-	const forTest = t.binaryExpression('<', i, t.memberExpression(array, t.identifier('length')));
-	const forUpdate = t.updateExpression('++', i);
+	const forTest = t.binaryExpression(backwards ? '>=' : '<=', i, arrayIndex(t, array, 0, !backwards));
+	const forUpdate = t.updateExpression(backwards ? '--' : '++', i);
 
 	return t.forStatement(forInit, forTest, forUpdate, body);
 }

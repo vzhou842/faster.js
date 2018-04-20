@@ -68,6 +68,7 @@ Restricted method names:
 - `.forEach()`
 - `.map()`
 - `.reduce()`
+- `.reduceRight()`
 
 ```js
 // OK
