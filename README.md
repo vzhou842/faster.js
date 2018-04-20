@@ -70,6 +70,7 @@ Restricted method names:
 - `.reduce()`
 - `.reduceRight()`
 - `.some()`
+- `.every()`
 
 ```js
 // OK

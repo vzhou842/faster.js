@@ -4,6 +4,7 @@ import arrayReduce from './array-reduce';
 import arrayReduceRight from './array-reduceRight';
 import arrayFilter from './array-filter';
 import arraySome from './array-some';
+import arrayEvery from './array-every';
 
 export default [
 	arrayForEach,
@@ -12,4 +13,5 @@ export default [
 	arrayReduceRight,
 	arrayFilter,
 	arraySome,
+	arrayEvery,
 ];
