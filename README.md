@@ -47,9 +47,9 @@ module: {
 faster.js rewrites common `Array` method calls to faster code that does the same thing (usually - see [When NOT to use faster.js](#warning-when-not-to-use-fasterjs)). This results in performance boosts (especially on code that relies heavily on `Array` methods) while maintaining code readability, but comes at the cost of a slightly larger bundle size. If having a small Javascript bundle size is much more important for you than performance is, you should not use faster.js.
 
 ### Demo
-![faster.js Demo Screenshot](https://fasterjs-demo.herokuapp.com/img/screenshot.png)
+![faster.js Demo Screenshot](https://fasterjs-demo.victorzhou.com/img/screenshot.png)
 
-Try it yourself: https://fasterjs-demo.herokuapp.com
+Try it yourself: https://fasterjs-demo.victorzhou.com
 
 Github Repo: https://github.com/vzhou842/faster.js-demo
 
