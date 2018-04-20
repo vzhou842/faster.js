@@ -6,7 +6,7 @@
 	"scripts": {
 		"bench": "npm run build && node ./bench/index.js",
 		"build": "babel src -d lib",
-		"test": "mocha --compilers js:babel-core/register",
+		"test": "mocha --require babel-core/register",
 		"prepare": "npm run build"
 	},
 	"dependencies": {},
