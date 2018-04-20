@@ -141,6 +141,11 @@ faster.js is 745.4% faster (4.399μs) than native
     ✓ native x 49,784 ops/sec ±0.38% (58 runs sampled)
     ✓ faster.js x 1,756,352 ops/sec ±0.99% (59 runs sampled)
 faster.js is 3428.0% faster (19.517μs) than native
+
+  array-some large
+    ✓ native x 2,472,829 ops/sec ±0.47% (184 runs sampled)
+    ✓ faster.js x 11,665,497 ops/sec ±0.41% (184 runs sampled)
+faster.js is 371.7% faster (0.319μs) than native
 ```
 
 ## FAQ
