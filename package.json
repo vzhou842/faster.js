@@ -5,6 +5,7 @@
 	"main": "lib/index.js",
 	"scripts": {
 		"bench": "npm run build && node ./bench/index.js",
+		"bench-fast": "npm run build && node ./bench/index.js -t 1",
 		"build": "babel src -d lib",
 		"test": "mocha --require babel-core/register",
 		"prepare": "npm run build"
