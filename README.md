@@ -118,6 +118,11 @@ for (let _i = 0; _i < arr.length; _i++) {
 ```bash
 $ npm run bench
 
+  array-every large
+    ✓ native x 2,255,548 ops/sec ±0.46% (57 runs sampled)
+    ✓ faster.js x 10,786,892 ops/sec ±1.25% (56 runs sampled)
+faster.js is 378.2% faster (0.351μs) than native
+
   array-filter large
     ✓ native x 169,237 ops/sec ±1.42% (55 runs sampled)
     ✓ faster.js x 1,110,629 ops/sec ±1.10% (59 runs sampled)
@@ -144,9 +149,9 @@ faster.js is 745.4% faster (4.399μs) than native
 faster.js is 3428.0% faster (19.517μs) than native
 
   array-some large
-    ✓ native x 2,472,829 ops/sec ±0.47% (184 runs sampled)
-    ✓ faster.js x 11,665,497 ops/sec ±0.41% (184 runs sampled)
-faster.js is 371.7% faster (0.319μs) than native
+    ✓ native x 2,968,367 ops/sec ±0.56% (56 runs sampled)
+    ✓ faster.js x 11,591,773 ops/sec ±1.29% (54 runs sampled)
+faster.js is 290.5% faster (0.251μs) than native
 ```
 
 ## FAQ
