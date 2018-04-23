@@ -1,6 +1,6 @@
 {
 	"name": "faster.js",
-	"version": "1.0.0-beta.1",
+	"version": "1.0.0",
 	"description": "A Babel plugin that compiles idiomatic Javascript to faster, micro-optimized code.",
 	"main": "lib/index.js",
 	"scripts": {
