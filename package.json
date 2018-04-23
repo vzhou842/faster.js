@@ -8,7 +8,7 @@
 		"bench-fast": "npm run build && node ./bench/index.js -t 1",
 		"build": "babel src -d lib",
 		"test": "mocha --require babel-core/register",
-		"prepare": "npm run build"
+		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {},
 	"devDependencies": {
@@ -17,7 +17,7 @@
 		"babel-preset-env": "^1.6.1",
 		"benchmark": "^2.1.4",
 		"command-line-args": "^5.0.2",
-		"mocha": "^5.0.5"
+		"mocha": "^5.1.1"
 	},
 	"repository": {
 		"type": "git",
