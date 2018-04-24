@@ -31,15 +31,18 @@ export default t => ({
 		const assignee = expression.left;
 
 		// If the array is the assignee, we need a temp var to hold the array.
-		const array = expression.right.callee.object;
+		let array = expression.right.callee.object;
 		if (t.isIdentifier(array) && array.name === assignee.name) {
-			mapPath.get('callee.object').replaceWith(defineId(t, path, array, 'const', 'arr'));
+			array = defineId(t, path, array, 'const', 'arr');
+			mapPath.get('callee.object').replaceWith(array);
+		} else {
+			array = getArray(t, path, mapPath);
 		}
 
-		const initAssignment = t.assignmentExpression('=', assignee, t.arrayExpression());
+		const initAssignment = t.assignmentExpression('=', assignee, arrayAllocExpression(t, array));
 		path.insertBefore(t.expressionStatement(initAssignment));
 
-		path.replaceWith(forLoop(t, path, assignee, mapPath));
+		path.replaceWith(forLoop(t, path, array, assignee, mapPath));
 	},
 
 	VariableDeclaration(path, state) {
@@ -51,25 +54,41 @@ export default t => ({
 			return;
 		}
 
-		const assignee = declaration.id;
-
 		const mapPath = path.get('declarations.0.init');
-		path.insertAfter(forLoop(t, path, assignee, mapPath));
-		mapPath.replaceWith(t.arrayExpression());
+
+		const assignee = declaration.id;
+		const array = getArray(t, path, mapPath);
+
+		path.insertAfter(forLoop(t, path, array, assignee, mapPath));
+		mapPath.replaceWith(arrayAllocExpression(t, array));
 	},
 });
 
-function forLoop(t, path, assignee, mapPath) {
-	const array = defineIdIfNeeded(t, mapPath.get('callee.object'), path);
+/**
+ * Returns an expression representing:
+ *     new Array(array.length)
+ */
+function arrayAllocExpression(t, array) {
+	return t.newExpression(t.identifier('Array'), [
+		t.memberExpression(array, t.identifier('length')),
+	]);
+}
+
+function getArray(t, path, mapPath) {
+	return defineIdIfNeeded(t, mapPath.get('callee.object'), path);
+}
+
+function forLoop(t, path, array, assignee, mapPath) {
 	const func = extractDynamicFuncIfNeeded(t, mapPath, path);
 	const i = path.scope.generateUidIdentifier('i');
 
 	const newMapCall = t.callExpression(func, [t.memberExpression(array, i, true), i, array]);
 	const forBody = t.blockStatement([
 		t.expressionStatement(
-			t.callExpression(
-				t.memberExpression(assignee, t.identifier('push')),
-				[newMapCall]
+			t.assignmentExpression(
+				'=',
+				t.memberExpression(assignee, i, true),
+				newMapCall
 			)
 		),
 	]);
