@@ -109,10 +109,10 @@ roughly compiles to
 ```js
 // Compiled with faster.js
 const arr = [1, 2, 3];
-const results = [];
+const results = new Array(arr.length);
 const _f = (e => 2 * e);
 for (let _i = 0; _i < arr.length; _i++) {
-  results.push(_f(arr[_i], _i, arr));
+  results[_i] = _f(arr[_i], _i, arr);
 }
 ```
 
