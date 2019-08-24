@@ -158,6 +158,8 @@ faster.js is 3428.0% faster (19.517μs) than native
 faster.js is 290.5% faster (0.251μs) than native
 ```
 
+The benchmark example above was run on Node 8. Later versions of Node include improvements / optimizations that may make some features in faster.js obsolete. View full benchmark examples here: [Node 8](https://gist.github.com/vzhou842/6f22cf3c18391a7f0c0bbcfb2abdaa1a), [Node 10](https://gist.github.com/vzhou842/fa06751ca54f1dad9613c00307ac5b0f), [Node 12](https://gist.github.com/vzhou842/eee22267e1cb5172a83a504cf9809ac3).
+
 ## FAQ
 
 #### What is a sparse array?
