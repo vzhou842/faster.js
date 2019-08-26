@@ -19,6 +19,9 @@
 		"command-line-args": "^5.0.2",
 		"mocha": "^6.2.0"
 	},
+	"peerDependencies": {
+		"babel-core": "^6.26.0"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/vzhou842/faster.js.git"
