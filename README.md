@@ -5,6 +5,8 @@
 
 faster.js is a [Babel](https://babeljs.io/) plugin that compiles idiomatic Javascript to faster, micro-optimized Javascript.
 
+Read **[the blog post](https://victorzhou.com/blog/avoid-premature-optimization/)** on faster.js!
+
 ## Installation
 [Setup Babel](https://babeljs.io/docs/setup) for your project if you haven't already. Then install faster.js:
 
